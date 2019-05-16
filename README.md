@@ -1,2 +1,2 @@
 # coppercoin
-c
+copper coin
