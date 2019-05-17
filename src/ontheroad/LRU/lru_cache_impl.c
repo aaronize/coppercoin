@@ -118,14 +118,26 @@ static void removeFromList(LRUCacheS *cache, cacheEntryS *entry)
     else if (entry == cache->lruListHead)
     {
         // 删除头结点
+        P(&cache->cache_lock);
+        cache->lruListHead = entry->lruListNext;
+        cache->lruListHead->lruListPrev = NULL;
+        V(&cache->cache_lock);
     }
     else if (entry == cache->lruListTail)
     {
         // 删除尾结点
+        P(&cache->cache_lock);
+        cache->lruListTail = entry->lruListPrev;
+        cache->lruListTail->lruListNext = NULL;
+        V(&cache->cache_lock);
     }
     else 
     {
         // 其他
+        P(&cache->cache_lock);
+        entry->lruListPrev->lruListNext = entry->lruListNext;
+        entry->lruListNext->lruListPrev = entry->lruListPrev;
+        V(&cache->cache_lock);
     }
 
     // 删除成功
@@ -205,11 +217,143 @@ static unsigned int hashKey(LRUCacheS *cache, char* key)
         hash = hash * a + (unsigned int)(*key);
         a = a * b;
     }
+
+    return hash % (cache->cacheCapacity);
+}
+
+// 从哈希表获取缓存单元
+static cacheEntryS *getValueFromHashMap(LRUCacheS *cache, char *key)
+{
+    cacheEntryS *entry = cache->hashMap[hashKey(cache, key)];
+    while (entry) 
+    {
+        if (!strncmp(entry->key, key, KEY_SIZE))
+            break;
+
+        entry = entry->hashListNext;
+    }
+
+    return entry;
+}
+
+// 向hash表插入缓存单元
+static void insertEntryToHashMap(LRUCacheS *cache, cacheEntryS *entry)
+{
+    cacheEntryS *n = cache->hashMap[hashKey(cache, entry->key)];
+    P(&cache->cache_lock);
+    if (n != NULL)
+    {
+        entry->hashListNext = n;
+        n->hashListPrev = entry;
+    }
+
+    cache->hashMap[hashKey(cache, entry->key)] = entry;
+    V(&cache->cache_lock);
+}
+
+// 从hash表里删除缓存单元
+static void removeEntryFromHashMap(LRUCacheS *cache, cacheEntryS *entry)
+{
+    if (NULL == entry || NULL == cache || NULL == cache->hashMap)
+    {
+        return ;
+    }
+
+    cacheEntryS *en = cache->hashMap[hashKey(cache, entry->key)];
+    while(en)
+    {
+        if (en->key == entry->key)
+        {
+            if (en->hashListPrev)
+            {
+                P(&cache->cache_lock);
+                en->hashListPrev->hashListNext = en->hashListNext;
+                V(&cache->cache_lock);
+            }
+            else
+            {
+                P(&cache->cache_lock);
+                cache->hashMap[hashKey(cache, entry->key)] = en->hashListNext;
+                V(&cache->cache_lock);
+            }
+
+            if (en->hashListNext)
+            {
+                P(&cache->cache_lock);
+                en->hashListNext->hashListPrev = en->hashListPrev;
+                V(&cache->cache_lock);
+            }
+            return;
+        }
+        en = en->hashListNext;
+    }
 }
 
 // 存取接口
 int LRUCacheSet(void *lruCache, char *key, char *data)
 {
     LRUCacheS *cache = (LRUCacheS*)lruCache;
+    cacheEntryS *entry = getValueFromHashMap(cache, key);
+    if (entry != NULL)
+    {
+        P(&entry->entry_lock);
+        strncpy(entry->data, data, VALUE_SIZE);
+        V(&entry->entry_lock);
+        updateLRUList(cache, entry);
+    }
+    else
+    {
+        // 数据没在缓存中
+        // 新建缓存单元
+        entry = newCacheEntry(key, data);
 
+        cacheEntryS *removedEntry = insertToListHead(cache, entry);
+        if (NULL != removedEntry)
+        {
+            // 缓存满了
+            removeEntryFromHashMap(cache, removedEntry);
+            freeCacheEntry(removedEntry);
+        }
+        insertEntryToHashMap(cache, entry);
+    }
+    return 0;
+}
+
+// 从缓存中取数据
+char *LRUCacheGet(void *lruCache, char *key)
+{
+    LRUCacheS *cache = (LRUCacheS *)lruCache;
+    cacheEntryS *entry = getValueFromHashMap(cache, key);
+    if (NULL != entry)
+    {
+        updateLRUList(cache, entry);
+        return entry->data;
+    }
+    else
+    {
+        // 缓存中没有相关数据
+        return NULL;
+    }
+    
+}
+
+
+// 测试接口
+void LRUCachePrint(void *lruCache)
+{
+    LRUCacheS *cache = (LRUCacheS *)lruCache;
+    if (NULL == cache || 0 == cache->lruListSize)
+    {
+        return;
+    }
+
+    fprintf(stdout, "\n>>>>>>>>>>>>>>>>>>>>>\n");
+    fprintf(stdout, "cache (key data): \n");
+    cacheEntryS *entry = cache->lruListHead;
+    while (entry)
+    {
+        fprintf(stdout, "(%s, %s)", entry->key, entry->data);
+        entry = entry->lruListNext;
+    }
+    fprintf(stdout, "\n>>>>>>>>>>>>>>>>>>>>>\n");
 }

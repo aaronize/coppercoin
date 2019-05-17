@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lru_cache.h"
-#include "lru_cache_impl.h"
+#include "./LRU/lru_cache.h"
+#include "./LRU/lru_cache_impl.h"
 
 int main(int argc, char **argv)
 {
