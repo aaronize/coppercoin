@@ -114,5 +114,9 @@ static void removeFromList(LRUCacheS *cache, cacheEntryS *entry)
         cache->lruListHead = entry->lruListNext;
         cache->lruListHead->lruListPrev = NULL;
         V(&cache->cache_lock);
+    } 
+    else if (entry == cache->lruListHead)
+    {
+        
     }
 }
