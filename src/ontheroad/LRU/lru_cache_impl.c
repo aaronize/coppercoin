@@ -134,4 +134,82 @@ static void removeFromList(LRUCacheS *cache, cacheEntryS *entry)
     V(&cache->cache_lock);
 }
 
+// 将结点插入到链表表头
+static cacheEntryS* insertToListHead(LRUCacheS *cache, cacheEntryS *entry)
+{
+    cacheEntryS *removedEntry = NULL;
+    P(&cache->cache_lock);
+    ++cache->lruListSize;
+    V(&cache->cache_lock);
 
+    if (cache->lruListSize > cache->cacheCapacity)
+    {
+        removedEntry = cache->lruListTail;
+        removeFromList(cache, cache->lruListTail);
+    }
+
+    if (cache->lruListHead == NULL && cache->lruListTail == NULL)
+    {
+        P(&cache->cache_lock);
+        cache->lruListHead = cache->lruListTail = entry;
+        V(&cache->cache_lock);
+    } 
+    else 
+    {
+        P(&cache->cache_lock);
+        entry->lruListNext = cache->lruListHead;
+        entry->lruListPrev = NULL;
+        cache->lruListHead->lruListPrev = entry;
+        cache->lruListHead = entry;
+        V(&cache->cache_lock);
+    }
+
+    return removedEntry;
+}
+
+// 释放整个链表
+static void freeList(LRUCacheS* cache)
+{
+    if (0 == cache->lruListSize)
+    {
+        return;
+    }
+
+    cacheEntryS *entry = cache->lruListHead;
+    while(entry) 
+    {
+        cacheEntryS *temp = entry->lruListNext;
+        freeCacheEntry(entry);
+        entry = temp;
+    }
+    cache->lruListSize = 0;
+}
+
+static void updateLRUList(LRUCacheS *cache, cacheEntryS *entry)
+{
+    removeFromList(cache, entry);
+    insertToListHead(cache, entry);
+}
+
+// TODO hash表
+static unsigned int hashKey(LRUCacheS *cache, char* key)
+{
+    unsigned int len = strlen(key);
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+    unsigned int i = 0;
+    
+    for (i = 0; i < len; key++, i++)
+    {
+        hash = hash * a + (unsigned int)(*key);
+        a = a * b;
+    }
+}
+
+// 存取接口
+int LRUCacheSet(void *lruCache, char *key, char *data)
+{
+    LRUCacheS *cache = (LRUCacheS*)lruCache;
+
+}
