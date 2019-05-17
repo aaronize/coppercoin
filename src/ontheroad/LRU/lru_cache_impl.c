@@ -117,6 +117,21 @@ static void removeFromList(LRUCacheS *cache, cacheEntryS *entry)
     } 
     else if (entry == cache->lruListHead)
     {
-        
+        // 删除头结点
     }
+    else if (entry == cache->lruListTail)
+    {
+        // 删除尾结点
+    }
+    else 
+    {
+        // 其他
+    }
+
+    // 删除成功
+    P(&cache->cache_lock);
+    cache->lruListSize--;
+    V(&cache->cache_lock);
 }
+
+
