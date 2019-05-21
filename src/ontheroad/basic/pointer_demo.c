@@ -1,5 +1,10 @@
 #include <stdio.h>
-
+/**
+ * 在C中字符串就是字节数组，并且只有不同的打印函数菜知道它们不同。
+ * 
+ * 
+ */
+  
 int main(int argc, char *argv[])
 {
     int ages[] = {32, 43, 12, 89, 2};
