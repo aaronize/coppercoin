@@ -20,6 +20,9 @@ typedef struct Array
 } Array;
 
 #define arraySetDupMethod(a, m) ((a)->dup = (m))
+#define arraySetFreeMethod(a, m) ((a)->free = (m))
+#define arraySetMatchMethod(a, m) ((a)->match = (m))
+
 
 
 #endif
