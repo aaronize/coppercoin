@@ -40,4 +40,33 @@ void serve_file(int, const char *);
 int startup(u_short *);
 void unimplemented(int);
 
+/******************startup******************/
+int startup(u_short *port)
+{
+    int httpd = 0;
+    int on = 1;
+    struct socketaddr_in name;
 
+    httpd = socket(PF_INET, SOCK_STREAM, 0);
+    if (httpd == -1)
+        error_die("socket");
+    memset(&name, 0, sizeof(name));
+    name.sin_family = AF_INET;
+    name.sin_port = htons(*port);
+    name.sin_addr.s_addr = htonl(INADDR_ANY);
+
+    // TODO 
+    // if ((setsockopt(httpd)))
+}
+
+int main(void)
+{
+    int server_sock = -1;
+    u_short port = 4000;
+    int client_sock = -1;
+    struct sockaddr_in client_name;
+    socklen_t client_name_len = sizeof(client_name);
+    pthread_t newthread;
+
+    server_socket = startup(&port);
+}
