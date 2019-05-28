@@ -3,6 +3,7 @@
 // #include <sys/socket.h>
 // Windows下换成如下头文件
 #include <winsock.h>
+#include <winsock2.h>
 #include <sys/types.h>
 // netinet.h 在Windows下包含在winsock.h下
 // #include <netinet/in.h>
