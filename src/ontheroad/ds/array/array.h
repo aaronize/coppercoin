@@ -16,6 +16,7 @@ typedef struct Array
     void(*free)(void *ptr);
     int(*match)(void *ptr, void *key);
 
+    // 存放数据的指针。空类型指针，可以指向任意类型数据
     void *p;
 } Array;
 
@@ -29,7 +30,7 @@ typedef struct Array
 
 Array* arrayCreate();
 void arrayInit(Array *array, int size, int typeSize);
-
+// pos 
 int arrayInsert(Array *array, size_t pos, void *const value);
 size_t arraySearchValue(Array *array, void *const value);
 void* arrayIndex(Array *array, size_t index);

@@ -46,6 +46,7 @@ void arrayInit(Array *array, int size, int typeSize)
     array->typeSize = typeSize;
 }
 
+// 在pos位置插入值value
 int arrayInsert(Array *array, size_t pos, void *const value)
 {
     if (NULL == array || array->len >= array->size || (pos > array->size || pos <= 0))
@@ -56,6 +57,28 @@ int arrayInsert(Array *array, size_t pos, void *const value)
     char *pBegin = array->p;
     for (size_t i = array->len; i > pos - 1; --i)
     {
-        
+        void *pNew = pBegin + i * array->typeSize;
+        void *pOld = pBegin + (i - 1) * array->typeSize;
+        if (NULL != array->dup)
+        {
+            array->dup(pNew, pOld);
+        }
+        else
+        {
+            memcpy(pNew, pOld, array->typeSize);
+        }
     }
+
+    void *pCopy = (void *)(pBegin + ((pos - 1) * array->typeSize));
+    if (NULL != array->dup)
+    {
+        array->dup(pCopy, value);
+    }
+    else
+    {
+        memcpy(pCopy, value, array->typeSize);
+    }
+
+    ++array->len;
+    return 0;
 }

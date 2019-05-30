@@ -15,7 +15,7 @@ int* inputModule(int* ptrCount)
     printf("Input numbers until you input zero:\n");
     while (1)
     {
-        scanf("%d", &d);
+        scanf_s("%d", &d);
         *ptrCount += 1;
         if (0 == d)
         {
