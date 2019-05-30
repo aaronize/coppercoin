@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "ex.grpc";
+
+pakcage helloworld;
+
+service Greeter {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+messaeg HelloRequest {
+    string name = 1;
+}
+
+message HelloReply {
+    string message = 1;
+}
