@@ -40,5 +40,11 @@ int main(int argc, char *argv[])
         printf("%s is %d years old again.\n", cur_name[i], cur_age[i]);
     }
 
+    printf("++++++++++++++++++\n");
+    char charvar = '\0';
+    printf("address of charvar = %p\n", &charvar);
+    // 和上面输出是一样的，这里加(void *)的作用是什么？
+    printf("address of charvar = %p\n", (void *)(&charvar));
+
     return 0;
 }
