@@ -5,10 +5,13 @@
 #define SIGTERM 12
 
 void handle_signal(int signo);
+void do_while(char * message);
 
 int main()
 {
     handle_signal(10);
+    do_while("try it!");
+
     return 0;
 }
 
@@ -42,5 +45,20 @@ void handle_signal(int signo)
 
     printf("handling ended...\n");
     
+    return;
+}
+
+/**
+ * do_while
+ * 
+ */
+void do_while(char * message)
+{
+    int i = 10;
+    do {
+        perror(message);
+        i--;
+    } while (i > 0);
+
     return;
 }
