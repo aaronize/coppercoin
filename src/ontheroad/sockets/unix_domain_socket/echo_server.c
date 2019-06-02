@@ -35,7 +35,7 @@ int main(void)
     if ((listend = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
         ERR_EXIT("socket error");
 
-    unlink("/tmp/echod.sock");
+    unlink("/tmp/echod.sock");  // 当为socket、FIFO或者一个设备文件时，则socket、FIFO或设备名被删除，但已经打开的仍然可以使用。
     struct sockaddr_un serv_addr;
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sun_family = AF_UNIX;
