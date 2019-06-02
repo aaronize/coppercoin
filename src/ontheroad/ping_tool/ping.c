@@ -22,11 +22,11 @@
 #define USHORT  unsigned short
 #define UINT    unsigned int
 
-#define ERR_EXITE(m) \
+#define ERR_EXIT(m) \
     do { \
         perror(m);\
         exit(EXIT_FAILURE);\
-    } whie (0)
+    } while (0)
 
 // ICMP datagram structure
 struct icmp
@@ -93,15 +93,15 @@ int main(int argc, char *argv[])
 
     if (argc < 2)
     {
-        // ERR_EXITE("Use: ");
+        // ERR_EXIT("Use: ");
         printf("Usage: %s hostname/IP address\n", argv[0]);
-        exite(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     // 生存原始套接字
     if ((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) == -1)
     {
-        ERR_EXITE("socket error\n");
+        ERR_EXIT("socket error\n");
     }
 
     // 设置目的地址信息
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         // 域名
         if ((host = gethostbyname(argv[1])) == NULL)
         {
-            ERR_EXITE("get host by name error\n");
+            ERR_EXIT("get host by name error\n");
         }
         toAddr.sin_addr = *(struct in_addr *)host->h_addr_list[0];
     }
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 
         nreceived++;
         if (unpack(buf, n, inet_ntoa(fromAddr.sin_addr)) == -1)
-            print("unpack error \n");
+            printf("unpack error \n");
 
         sleep(1);
     }
@@ -191,7 +191,7 @@ int unpack(char *buf, int len, char *addr)
 
     if (len < 8)
     {
-        // ERR_EXITE("ICMP packet's length is less than 8\n");
+        // ERR_EXIT("ICMP packet's length is less than 8\n");
         printf("ICMP packet's length is less than 8\n");
         return -1;
     }
@@ -223,7 +223,7 @@ float timeDelta(struct timeval *begin, struct timeval *end)
 USHORT checkSum(USHORT *addr, int len)
 {
     UINT sum = 0;
-    whie (len > 1)
+    while (len > 1)
     {
         sum += *addr++;
         len -= 2;
