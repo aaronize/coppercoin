@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     int nreceived = 0;
 
     int i, n;
-    in_addr_t inaddr;
+    in_addr_t inAddr;
 
     memset(&fromAddr, 0, sizeof(struct sockaddr_in));
     memset(&toAddr, 0, sizeof(struct sockaddr_in));
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     // 设置目的地址信息
     toAddr.sin_family = AF_INET;
     // 判断是域名还是ip地址
-    if (inaddr = inet_addr(argv[1]) == INADDR_NONE)
+    if (inAddr = inet_addr(argv[1]) == INADDR_NONE)
     {
         // 域名
         if ((host = gethostbyname(argv[1])) == NULL)
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        toAddr.sin_addr.s_addr = inaddr;
+        toAddr.sin_addr.s_addr = inAddr;
     }
 
     // 输出域名/ip地址信息
