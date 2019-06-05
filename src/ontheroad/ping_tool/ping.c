@@ -31,12 +31,14 @@
 // ICMP datagram structure
 struct icmp
 {
-    UCHAR           type;       // 类型
-    UCHAR           code;       // 代码
-    USHORT          checksum;   // 校验和
-    USHORT          id;         // 标识符
-    USHORT          sequence;   // 序号
-    struct timeval  timestamp;  // 时间戳
+    UCHAR           type;       // 类型 1 byte
+    UCHAR           code;       // 代码 1 byte
+    USHORT          checksum;   // 校验和 2byte
+
+    USHORT          id;         // 标识符 2 byte
+    USHORT          sequence;   // 序号 2 byte
+
+    struct timeval  timestamp;  // 时间戳 8 byte
 };
 
 // IP
@@ -51,15 +53,19 @@ struct ip
     UCHAR       version:4;
     UCHAR       hlen:4;
     #endif
-    UCHAR       tos;        // 服务类型
-    USHORT      len;        // 总长
-    USHORT      id;         // 标识符
-    USHORT      offset;     // 标志和片偏移
-    UCHAR       ttl;        // 生存时间
-    UCHAR       protocol;   // 协议
-    USHORT      checksum;   // 校验和
-    struct in_addr  ipsrc;  // 32位源地址
-    struct in_addr  ipdst;  // 32位目的地址
+    UCHAR       tos;        // 服务类型 1 byte
+    USHORT      len;        // 总长 2 byte
+
+    USHORT      id;         // 标识符 2 byte
+    USHORT      offset;     // 标志和片偏移 2 byte
+
+    UCHAR       ttl;        // 生存时间 1 byte
+    UCHAR       protocol;   // 协议 1 byte
+    USHORT      checksum;   // 校验和 2 byte
+
+    struct in_addr  ipsrc;  // 32位源地址 4 byte
+
+    struct in_addr  ipdst;  // 32位目的地址 4 byte
 };
 
 char buf[BUF_SIZE] = {0};
@@ -168,7 +174,8 @@ void pack(struct icmp *icmp, int sequence)
     icmp->checksum = 0;
     icmp->id = getpid();
     icmp->sequence = sequence;
-    gettimeofday(&icmp->timestamp, 0);
+    // gettimeofday(&icmp->timestamp, 0);
+    gettimeofday(&icmp->timestamp, NULL);
     icmp->checksum = checkSum((USHORT *)icmp, ICMP_SIZE);
 
     return;
