@@ -41,7 +41,7 @@ struct icmp
     struct timeval  timestamp;  // 时间戳 8 byte
 };
 
-// IP
+// IP 首部共 20 byte
 struct ip
 {
     // 主机字节序判断
