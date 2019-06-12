@@ -23,7 +23,11 @@ int main(int argc, char **argv)
         } while (j < 4);
     }
 
-    printf("%d", s);
+    printf("%d\n", s);
+
+    printf("char: %d\n", sizeof(char)); // 1
+    printf("char *: %d\n", sizeof(char *)); // 8
+
 
     return 0;
 }
