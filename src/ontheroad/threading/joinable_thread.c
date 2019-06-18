@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    // Free attribute and wait for other threads
     pthread_attr_destroy(&attr);
 
     for (t = 0; t < THREADS_NUM; t++)
