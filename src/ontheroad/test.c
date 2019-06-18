@@ -10,22 +10,24 @@ typedef struct TestSt
 int main(int argc, char **argv)
 {
     // 
-    int sockfd;
-    struct sockaddr_in  my_addr;
-    u_short port = 8080;
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1)
-        exit(1);
-    memset(&my_addr, 0, sizeof(my_addr));
-    my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(port);
-    // my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    my_addr.sin_addr.s_addr = inet_addr("192.168.32.128");
+    int a[4][4] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {11, 12, 13, 14}, {15, 16, 17, 18}};
+    int i = 0, j = 0, s = 0;
 
-    // 把my_addr.sin_zero的前8个字节置零
-    bzero(&(my_addr.sin_zero), 8);
+    while (i++ < 4)
+    {
+        if (i == 2 || i == 4) continue;
+        j = 0;
+        do {
+            s += a[i][j];
+            j++;
+        } while (j < 4);
+    }
 
-    bind(sockfd, (struct sockaddr *)*my_addr, sizeof(struct sockaddr));
+    printf("%d\n", s);
+
+    printf("char: %d\n", sizeof(char)); // 1
+    printf("char *: %d\n", sizeof(char *)); // 8
+
 
     return 0;
 }

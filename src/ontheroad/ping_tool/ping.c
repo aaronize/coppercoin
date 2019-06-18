@@ -22,24 +22,26 @@
 #define USHORT  unsigned short
 #define UINT    unsigned int
 
-#define ERR_EXITE(m) \
+#define ERR_EXIT(m) \
     do { \
         perror(m);\
         exit(EXIT_FAILURE);\
-    } whie (0)
+    } while (0)
 
 // ICMP datagram structure
 struct icmp
 {
-    UCHAR           type;       // 类型
-    UCHAR           code;       // 代码
-    USHORT          checksum;   // 校验和
-    USHORT          id;         // 标识符
-    USHORT          sequence;   // 序号
-    struct timeval  timestamp;  // 时间戳
+    UCHAR           type;       // 类型 1 byte
+    UCHAR           code;       // 代码 1 byte
+    USHORT          checksum;   // 校验和 2byte
+
+    USHORT          id;         // 标识符 2 byte
+    USHORT          sequence;   // 序号 2 byte
+
+    struct timeval  timestamp;  // 时间戳 8 byte
 };
 
-// IP
+// IP 首部共 20 byte
 struct ip
 {
     // 主机字节序判断
@@ -51,15 +53,19 @@ struct ip
     UCHAR       version:4;
     UCHAR       hlen:4;
     #endif
-    UCHAR       tos;        // 服务类型
-    USHORT      len;        // 总长
-    USHORT      id;         // 标识符
-    USHORT      offset;     // 标志和片偏移
-    UCHAR       ttl;        // 生存时间
-    UCHAR       protocol;   // 协议
-    USHORT      checksum;   // 校验和
-    struct in_addr  ipsrc;  // 32位源地址
-    struct in_addr  ipdst;  // 32位目的地址
+    UCHAR       tos;        // 服务类型 1 byte
+    USHORT      len;        // 总长 2 byte
+
+    USHORT      id;         // 标识符 2 byte
+    USHORT      offset;     // 标志和片偏移 2 byte
+
+    UCHAR       ttl;        // 生存时间 1 byte
+    UCHAR       protocol;   // 协议 1 byte
+    USHORT      checksum;   // 校验和 2 byte
+
+    struct in_addr  ipsrc;  // 32位源地址 4 byte
+
+    struct in_addr  ipdst;  // 32位目的地址 4 byte
 };
 
 char buf[BUF_SIZE] = {0};
@@ -86,39 +92,39 @@ int main(int argc, char *argv[])
     int nreceived = 0;
 
     int i, n;
-    in_addr_t inaddr;
+    in_addr_t inAddr;
 
     memset(&fromAddr, 0, sizeof(struct sockaddr_in));
     memset(&toAddr, 0, sizeof(struct sockaddr_in));
 
     if (argc < 2)
     {
-        // ERR_EXITE("Use: ");
+        // ERR_EXIT("Use: ");
         printf("Usage: %s hostname/IP address\n", argv[0]);
-        exite(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
 
     // 生存原始套接字
     if ((sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) == -1)
     {
-        ERR_EXITE("socket error\n");
+        ERR_EXIT("socket error\n");
     }
 
     // 设置目的地址信息
     toAddr.sin_family = AF_INET;
     // 判断是域名还是ip地址
-    if (inaddr = inet_addr(argv[1]) == INADDR_NONE)
+    if (inAddr = inet_addr(argv[1]) == INADDR_NONE)
     {
         // 域名
         if ((host = gethostbyname(argv[1])) == NULL)
         {
-            ERR_EXITE("get host by name error\n");
+            ERR_EXIT("get host by name error\n");
         }
         toAddr.sin_addr = *(struct in_addr *)host->h_addr_list[0];
     }
     else
     {
-        toAddr.sin_addr.s_addr = inaddr;
+        toAddr.sin_addr.s_addr = inAddr;
     }
 
     // 输出域名/ip地址信息
@@ -148,7 +154,7 @@ int main(int argc, char *argv[])
 
         nreceived++;
         if (unpack(buf, n, inet_ntoa(fromAddr.sin_addr)) == -1)
-            print("unpack error \n");
+            printf("unpack error \n");
 
         sleep(1);
     }
@@ -168,7 +174,8 @@ void pack(struct icmp *icmp, int sequence)
     icmp->checksum = 0;
     icmp->id = getpid();
     icmp->sequence = sequence;
-    gettimeofday(&icmp->timestamp, 0);
+    // gettimeofday(&icmp->timestamp, 0);
+    gettimeofday(&icmp->timestamp, NULL);
     icmp->checksum = checkSum((USHORT *)icmp, ICMP_SIZE);
 
     return;
@@ -191,7 +198,7 @@ int unpack(char *buf, int len, char *addr)
 
     if (len < 8)
     {
-        // ERR_EXITE("ICMP packet's length is less than 8\n");
+        // ERR_EXIT("ICMP packet's length is less than 8\n");
         printf("ICMP packet's length is less than 8\n");
         return -1;
     }
@@ -223,7 +230,7 @@ float timeDelta(struct timeval *begin, struct timeval *end)
 USHORT checkSum(USHORT *addr, int len)
 {
     UINT sum = 0;
-    whie (len > 1)
+    while (len > 1)
     {
         sum += *addr++;
         len -= 2;
