@@ -36,3 +36,8 @@ void Subject::setState(int s)
 {
     state = s;
 }
+
+int Subject::getState()
+{
+    return state;
+}

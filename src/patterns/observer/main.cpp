@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Subject.h"
-#include "Observer.h"
+// #include "Observer.h"
 #include "ConcreteObserver.h"
 #include "Subject.h"
 
