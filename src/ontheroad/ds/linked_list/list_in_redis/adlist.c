@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "adlist.h"
+#include "zmalloc.h"
 
 // create a new list
 list *listCreate(void)
@@ -36,5 +37,6 @@ void listEmpty(list *list)
 
         current = next;
     }
-    
+    list->head = list->tail = NULL;
+    list->len = 0;
 }

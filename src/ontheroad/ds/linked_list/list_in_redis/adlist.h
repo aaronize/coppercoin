@@ -19,6 +19,7 @@ typedef struct list
 {
     listNode *head;
     listNode *tail;
+    // 函数指针
     void *(*dup)(void *ptr);
     void (*free)(void *ptr);
     int (*match)(void *ptr, void *key);
