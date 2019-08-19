@@ -9,6 +9,7 @@ int* inputModule(int* ptrCount)
     int* arr, d, i = 0;
     int length = TE_SIZE;
     
+    // malloc声明数组
     arr = (int*)malloc(TE_SIZE * sizeof(int));
     memset(arr, 0, length * sizeof(int));
 
