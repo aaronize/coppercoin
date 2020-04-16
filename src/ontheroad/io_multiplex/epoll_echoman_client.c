@@ -57,7 +57,7 @@ static void handle_connection(int sockFd)
 
     for (;;)
     {
-        nfds = epoll_wait(epollFd, events, nfds, sockFd, buf);
+        nfds = epoll_wait(epollFd, events, EPOLL_EVENTS, -1);
         handle_events(epollFd, events, nfds, sockFd, buf);
     }
     close(epollFd);
@@ -94,10 +94,10 @@ static void do_read(int epollFd, int fd, int sockFd, char *buf)
     else
     {
         if (fd == STDIN_FILENO)
-            add_event(epollFd, sockfd, EPOLLOUT);
+            add_event(epollFd, sockFd, EPOLLOUT);
         else
         {
-            del_event(epollFd, sockfd, EPOLLIN);
+            del_event(epollFd, sockFd, EPOLLIN);
             add_event(epollFd, STDOUT_FILENO, EPOLLOUT);
         }
     }
