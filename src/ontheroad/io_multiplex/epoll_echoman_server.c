@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -23,6 +23,8 @@
 // 函数声明
 // 创建套接字并绑定
 static int socket_bind(const char* ip, int port);
+// 设置socket为非阻塞，使用ET模式时必须，LT模式时选用
+static void set_nonblocking(int fd);
 // IO多路复用epoll
 static void do_epoll(int listenfd);
 // 事件处理函数
@@ -74,6 +76,18 @@ static int socket_bind(const char* ip, int port)
     }
 
     return listenFd;
+}
+
+static void set_nonblocking(int fd)
+{
+    int flags = fcntl(sfd, F_GETFL, 0);
+    if (flags == -1)
+        return -1;
+
+    if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1)
+        return -1;
+    
+    return 0;
 }
 
 static void do_epoll(int listenFd)
