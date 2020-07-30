@@ -41,7 +41,9 @@ int command_interpreter(int sd)
 
 int main(int argc, char *argv[])
 {
-    printf("hello world!\n");
+    // printf("hello world!\n");
+
+    // sock_fd = socket(PF_INET)
 
     return 0;
 }
