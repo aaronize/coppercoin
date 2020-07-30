@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <stdio.h>
 
-void signalWithNow(int signo)
+void signal_white_now(int signo)
 {
     printf("Bye Bye!\n");
 }

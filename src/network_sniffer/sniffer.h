@@ -2,8 +2,8 @@
 // Created by Aaron on 2019/7/27.
 //
 
-#ifndef COPPERCOIN_SNIFFER_H
-#define COPPERCOIN_SNIFFER_H
+#ifndef __COPPERCOIN_SNIFFER_H__
+#define __COPPERCOIN_SNIFFER_H__
 
 typedef struct s_protocol
 {
@@ -31,4 +31,4 @@ void display_time_add_date();
 void getting_started();
 void signal_white_now(int);
 
-#endif //COPPERCOIN_SNIFFER_H
+#endif //__COPPERCOIN_SNIFFER_H__

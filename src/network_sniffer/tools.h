@@ -2,8 +2,8 @@
 // Created by Aaron on 2019/7/27.
 //
 
-#ifndef COPPERCOIN_TOOLS_H
-#define COPPERCOIN_TOOLS_H
+#ifndef __COPPERCOIN_TOOLS_H__
+#define __COPPERCOIN_TOOLS_H__
 
 #include <stdio.h>
 
@@ -15,4 +15,4 @@
 #define BLUE_COLOR "34"
 #define ZERO_COLOR "0"
 
-#endif //COPPERCOIN_TOOLS_H
+#endif //__COPPERCOIN_TOOLS_H__
